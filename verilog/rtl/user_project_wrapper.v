@@ -76,13 +76,108 @@ module user_project_wrapper #(
 
     // User maskable interrupt signals
     output [2:0] user_irq
-);
+    );
 
-/*--------------------------------------*/
 /* User project is instantiated  here   */
-/*--------------------------------------*/
 
-user_proj_example mprj (
+
+//---------Processor----------------------------------------------------------------------
+
+    wire clk;
+    wire reset;
+    wire [12:0] uP_instr_mem_addr;
+    wire [15:0] uP_instr;
+    wire [7:0] uP_data_mem_addr;
+    wire [15:0] uP_read_data = data_read_data;
+    wire [15:0] uP_write_data;
+    wire uP_dataw_en; 
+    wire start;
+    wire hlt;
+    wire Serial_input;
+    wire Serial_output;
+    
+processor uP(
+`ifdef USE_POWER_PINS
+    .vccd1(vccd1),	// User area 1 1.8V supply
+    .vssd1(vssd1),	// User area 1 digital ground
+`endif
+    .clk(clk), .reset(reset),
+    .instr_mem_addr(uP_instr_mem_addr),
+    .instr(uP_instr),
+    .data_mem_addr(uP_data_mem_addr),
+    .read_data(uP_read_data),
+    .write_data(uP_write_data),
+    .Dataw_en(uP_dataw_en),
+    .start(start),
+    .hlt(hlt),
+    .Serial_input(Serial_input),
+    .Serial_output(Serial_output)
+    );
+    
+    
+//-----------Data_memory------------------------------------------------------------------
+    wire data_mem_sel = 1'b1;
+    wire dataw_en;
+    wire [7:0] data_mem_addr;
+    wire [15:0] data_write_data;
+    wire [15:0] data_read_data;
+gf180mcu_fd_ip_sram__sram256x8m8wm1 data_memory_LSB(
+	.CLK(clk),
+	.CEN(data_mem_sel),
+	.GWEN(dataw_en),
+	.WEN({8{dataw_en}}),
+	.A(data_mem_addr),
+	.D(data_write_data[7:0]),
+	.Q(data_read_data[7:0]),
+	.VDD(vccd1),
+	.VSS(vssd1)
+        );
+
+gf180mcu_fd_ip_sram__sram256x8m8wm1 data_memory_MSB(
+	.CLK(clk),
+	.CEN(data_mem_sel),
+	.GWEN(dataw_en),
+	.WEN({8{dataw_en}}),
+	.A(data_mem_addr),
+	.D(data_write_data[15:8]),
+	.Q(data_read_data[15:8]),
+	.VDD(vccd1),
+	.VSS(vssd1)
+        );
+
+//------------Instruction_memory----------------------------------------------------------
+    wire instr_mem_sel = 1'b1;
+    wire instrw_en;
+    wire [12:0] instr_mem_addr;
+    wire [12:8] dummy = instr_mem_addr[12:8];
+    wire [15:0] instr_write_data;
+    wire [15:0] instr;
+gf180mcu_fd_ip_sram__sram256x8m8wm1 instr_memory_LSB(
+	.CLK(clk),
+	.CEN(instr_mem_sel),
+	.GWEN(instrw_en),
+	.WEN({8{instrw_en}}),
+	.A(instr_mem_addr[7:0]),
+	.D(instr_write_data[7:0]),
+	.Q(instr[7:0]),
+	.VDD(vccd1),
+	.VSS(vssd1)
+        );
+
+gf180mcu_fd_ip_sram__sram256x8m8wm1 instr_memory_MSB(
+	.CLK(clk),
+	.CEN(instr_mem_sel),
+	.GWEN(instrw_en),
+	.WEN({8{instrw_en}}),
+	.A(instr_mem_addr[7:0]),
+	.D(instr_write_data[15:8]),
+	.Q(instr[15:8]),
+	.VDD(vccd1),
+	.VSS(vssd1)
+        );
+
+
+io_interface IO_interface (
 `ifdef USE_POWER_PINS
 	.vccd1(vccd1),	// User area 1 1.8V power
 	.vssd1(vssd1),	// User area 1 digital ground
@@ -92,7 +187,7 @@ user_proj_example mprj (
     .wb_rst_i(wb_rst_i),
 
     // MGMT SoC Wishbone Slave
-
+/*
     .wbs_cyc_i(wbs_cyc_i),
     .wbs_stb_i(wbs_stb_i),
     .wbs_we_i(wbs_we_i),
@@ -101,7 +196,7 @@ user_proj_example mprj (
     .wbs_dat_i(wbs_dat_i),
     .wbs_ack_o(wbs_ack_o),
     .wbs_dat_o(wbs_dat_o),
-
+*/
     // Logic Analyzer
 
     .la_data_in(la_data_in),
@@ -113,10 +208,35 @@ user_proj_example mprj (
     .io_in (io_in),
     .io_out(io_out),
     .io_oeb(io_oeb),
+    
+    // clk & reset
+    .clk(clk),
+    .reset(reset),
 
     // IRQ
-    .irq(user_irq)
-);
+    .irq(user_irq),
+    
+    // processor related
+    .uP_instr_mem_addr(uP_instr_mem_addr),
+    .uP_instr(uP_instr),
+    .uP_data_mem_addr(uP_data_mem_addr),
+    .uP_write_data(uP_write_data),
+    .uP_dataw_en(uP_dataw_en),
+    .start(start),
+    .hlt(hlt),
+    
+    // data memory related
+    .dataw_en(dataw_en),
+    .data_mem_addr(data_mem_addr),
+    .data_write_data(data_write_data),
+    .data_read_data(data_read_data),
+    
+    // instr memory related
+    .instrw_en(instrw_en),
+    .instr_mem_addr(instr_mem_addr),
+    .instr_write_data(instr_write_data),
+    .instr(instr)
+    );
 
 endmodule	// user_project_wrapper
 
