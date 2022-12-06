@@ -1,14 +1,20 @@
 {
     "DESIGN_NAME": "user_project_wrapper",
     "VERILOG_FILES": ["dir::../../verilog/rtl/defines.v", "dir::../../verilog/rtl/user_project_wrapper.v"],
-    "CLOCK_PERIOD": 10,
-    "CLOCK_PORT": "user_clock2",
-    "CLOCK_NET": "mprj.clk",
-    "FP_PDN_MACRO_HOOKS": "mprj vccd1 vssd1 vccd1 vssd1",
+    "CLOCK_PERIOD": 24,
+    "CLOCK_PORT": "wb_clk_i",
+    "CLOCK_NET": "clk",
+    "FP_PDN_MACRO_HOOKS": ["IO_interface vccd1 vssd1 vccd1 vssd1", "uP vccd1 vssd1 vccd1 vssd1", "instr_memory_MSB vccd1 vssd1 vccd1 vssd1", "instr_memory_LSB vccd1 vssd1 vccd1 vssd1", "data_memory_MSB vccd1 vssd1 vccd1 vssd1", "data_memory_LSB vccd1 vssd1 vccd1 vssd1"],
+    
+    
     "MACRO_PLACEMENT_CFG": "dir::macro.cfg",
-    "VERILOG_FILES_BLACKBOX": ["dir::../../verilog/rtl/defines.v", "dir::../../verilog/rtl/user_proj_example.v"],
-    "EXTRA_LEFS": "dir::../../lef/user_proj_example.lef",
-    "EXTRA_GDS_FILES": "dir::../../gds/user_proj_example.gds",
+    
+    "VERILOG_FILES_BLACKBOX": ["dir::../../verilog/rtl/defines.v", "dir::../../verilog/rtl/processor.v", "dir::../../verilog/rtl/io_interface.v", "dir::../../dependencies/pdks/gf180mcuC/libs.ref/gf180mcu_fd_ip_sram/verilog/gf180mcu_fd_ip_sram__sram256x8m8wm1.v"],
+    
+    "EXTRA_LEFS": ["dir::../../lef/processor.lef", "dir::../../lef/io_interface.lef", "dir::../../dependencies/pdks/gf180mcuC/libs.ref/gf180mcu_fd_ip_sram/lef/gf180mcu_fd_ip_sram__sram256x8m8wm1.lef"],
+    
+    "EXTRA_GDS_FILES": ["dir::../../gds/processor.gds", "dir::../../gds/io_interface.gds", "dir::../../dependencies/pdks/gf180mcuC/libs.ref/gf180mcu_fd_ip_sram/gds/gf180mcu_fd_ip_sram__sram256x8m8wm1.gds"],
+    
     "FP_PDN_CHECK_NODES": 0,
     "SYNTH_ELABORATE_ONLY": 1,
     "PL_RANDOM_GLB_PLACEMENT": 1,
@@ -17,8 +23,8 @@
     "PL_RESIZER_BUFFER_INPUT_PORTS": 0,
     "FP_PDN_ENABLE_RAILS": 0,
     "DIODE_INSERTION_STRATEGY": 0,
-    "RUN_FILL_INSERTION": 0,
-    "RUN_TAP_DECAP_INSERTION": 0,
+    "FILL_INSERTION": 0,
+    "TAP_DECAP_INSERTION": 0,
     "FP_PDN_VPITCH": 180,
     "FP_PDN_HPITCH": 180,
     "CLOCK_TREE_SYNTH": 0,
@@ -27,7 +33,7 @@
     "MAGIC_ZEROIZE_ORIGIN": 0,
     "FP_SIZING": "absolute",
     "RUN_CVC": 0,
-    "UNIT": "2.4",
+    "UNIT": 2.4,
     "FP_IO_VEXTEND": "expr::2 * $UNIT",
     "FP_IO_HEXTEND": "expr::2 * $UNIT",
     "FP_IO_VLENGTH": "ref::$UNIT",
@@ -39,8 +45,8 @@
     "FP_PDN_CORE_RING_HWIDTH": 3.1,
     "FP_PDN_CORE_RING_VOFFSET": 12.45,
     "FP_PDN_CORE_RING_HOFFSET": 12.45,
-    "FP_PDN_CORE_RING_VSPACING": 1.7,
-    "FP_PDN_CORE_RING_HSPACING": 1.7,
+    "FP_PDN_CORE_RING_VSPACING": 12.45,
+    "FP_PDN_CORE_RING_HSPACING": 12.45,
     "FP_PDN_VWIDTH": 3.1,
     "FP_PDN_HWIDTH": 3.1,
     "FP_PDN_VSPACING": "expr::(5 * $FP_PDN_CORE_RING_VWIDTH)",
