@@ -33,14 +33,8 @@ module user_project_wrapper #(
     parameter BITS = 32
 ) (
 `ifdef USE_POWER_PINS
-    inout vdda1,	// User area 1 3.3V supply
-    inout vdda2,	// User area 2 3.3V supply
-    inout vssa1,	// User area 1 analog ground
-    inout vssa2,	// User area 2 analog ground
-    inout vccd1,	// User area 1 1.8V supply
-    inout vccd2,	// User area 2 1.8v supply
-    inout vssd1,	// User area 1 digital ground
-    inout vssd2,	// User area 2 digital ground
+    inout vdd,	// User area 1 3.3V supply
+    inout vss,	// User area 2 3.3V supply
 `endif
 
     // Wishbone Slave ports (WB MI A)
@@ -98,8 +92,8 @@ module user_project_wrapper #(
     
 processor uP(
 `ifdef USE_POWER_PINS
-    .vccd1(vccd1),	// User area 1 1.8V supply
-    .vssd1(vssd1),	// User area 1 digital ground
+    .vdd(vdd),	// User area 1 3.3V supply
+    .vss(vss),	// User area 2 3.3V supply
 `endif
     .clk(clk), .reset(reset),
     .instr_mem_addr(uP_instr_mem_addr),
@@ -129,8 +123,8 @@ gf180mcu_fd_ip_sram__sram256x8m8wm1 data_memory_LSB(
 	.A(data_mem_addr),
 	.D(data_write_data[7:0]),
 	.Q(data_read_data[7:0]),
-	.VDD(vccd1),
-	.VSS(vssd1)
+	.VDD(vdd),
+	.VSS(vss)
         );
 
 gf180mcu_fd_ip_sram__sram256x8m8wm1 data_memory_MSB(
@@ -141,8 +135,8 @@ gf180mcu_fd_ip_sram__sram256x8m8wm1 data_memory_MSB(
 	.A(data_mem_addr),
 	.D(data_write_data[15:8]),
 	.Q(data_read_data[15:8]),
-	.VDD(vccd1),
-	.VSS(vssd1)
+	.VDD(vdd),
+	.VSS(vss)
         );
 
 //------------Instruction_memory----------------------------------------------------------
@@ -160,8 +154,8 @@ gf180mcu_fd_ip_sram__sram256x8m8wm1 instr_memory_LSB(
 	.A(instr_mem_addr[7:0]),
 	.D(instr_write_data[7:0]),
 	.Q(instr[7:0]),
-	.VDD(vccd1),
-	.VSS(vssd1)
+	.VDD(vdd),
+	.VSS(vss)
         );
 
 gf180mcu_fd_ip_sram__sram256x8m8wm1 instr_memory_MSB(
@@ -172,15 +166,15 @@ gf180mcu_fd_ip_sram__sram256x8m8wm1 instr_memory_MSB(
 	.A(instr_mem_addr[7:0]),
 	.D(instr_write_data[15:8]),
 	.Q(instr[15:8]),
-	.VDD(vccd1),
-	.VSS(vssd1)
+	.VDD(vdd),
+	.VSS(vss)
         );
 
 
 io_interface IO_interface (
 `ifdef USE_POWER_PINS
-	.vccd1(vccd1),	// User area 1 1.8V power
-	.vssd1(vssd1),	// User area 1 digital ground
+	.vdd(vdd),	// User area 1 1.8V power
+	.vss(vss),	// User area 1 digital ground
 `endif
 
     .wb_clk_i(wb_clk_i),
