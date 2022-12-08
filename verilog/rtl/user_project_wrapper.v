@@ -90,7 +90,7 @@ module user_project_wrapper #(
     wire Serial_input;
     wire Serial_output;
     
-processor uP(
+processor micro_processor(
 `ifdef USE_POWER_PINS
 	.vdd(vdd),	// User area 1 1.8V power
 	.vss(vss),	// User area 1 digital ground

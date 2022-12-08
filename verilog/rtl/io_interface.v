@@ -136,8 +136,8 @@ module io_interface (
     assign data_mem_addr = (start) ? uP_data_mem_addr : data_load_addr;
     assign instr_mem_addr = (start) ? uP_instr_mem_addr : instr_load_addr;
     assign uP_instr = (start) ? instr : 16'b001_00000_00000_100;				//NOP when start = 0
-    assign dataw_en = (start) ? uP_dataw_en : (wr_rdb && !addr_memb && !instr_datab);
-    assign instrw_en = !start && wr_rdb && !addr_memb && instr_datab;
+    assign dataw_en = (start) ? ~uP_dataw_en : ~(wr_rdb && !addr_memb && !instr_datab);	//active low
+    assign instrw_en = ~(!start && wr_rdb && !addr_memb && instr_datab);			//active low
     assign instr_write_data = data_in;
     assign data_write_data = (start) ? uP_write_data : data_in;
     
