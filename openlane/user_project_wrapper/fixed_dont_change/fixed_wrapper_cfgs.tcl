@@ -47,7 +47,7 @@ set ::env(FP_PDN_CORE_RING_HOFFSET) 16
 set ::env(FP_PDN_CORE_RING_VSPACING) 1.7
 set ::env(FP_PDN_CORE_RING_HSPACING) $::env(FP_PDN_CORE_RING_VSPACING)
 set ::env(FP_PDN_HOFFSET) 5
-#set ::env(FP_PDN_HPITCH) [expr 60 + abs(int($::env(FP_PDN_HPITCH_MULT))) * 30]
+set ::env(FP_PDN_HPITCH) [expr 60 + abs(int($::env(FP_PDN_HPITCH_MULT))) * 30]
 
 set ::env(FP_PDN_VWIDTH) 3.1
 set ::env(FP_PDN_HWIDTH) 3.1

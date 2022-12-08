@@ -1,0 +1,105 @@
+diff --git a/Makefile b/Makefile
+index 3b25487..06e4255 100644
+--- a/Makefile
++++ b/Makefile
+@@ -68,13 +68,14 @@ endif
+
+ ifeq ($(PDK),gf180mcuC)
+
+-	MPW_TAG ?= gfmpw-0b
++	MPW_TAG ?= gfmpw-0d
+ 	CARAVEL_NAME := caravel
+ 	CARAVEL_REPO := https://github.com/efabless/caravel-gf180mcu
+ 	CARAVEL_TAG := $(MPW_TAG)
+ 	#OPENLANE_TAG=ddfeab57e3e8769ea3d40dda12be0460e09bb6d9
+-	export OPEN_PDKS_COMMIT?=0059588eebfc704681dc2368bd1d33d96281d10f
+-	export OPENLANE_TAG?=2022.11.19
++	#export OPEN_PDKS_COMMIT?=0059588eebfc704681dc2368bd1d33d96281d10f
++	export OPEN_PDKS_COMMIT?=35c7265f51749ad8d9fdbb575af22c7c8fab974e
++	export OPENLANE_TAG?=2022.11.29
+
+ endif
+
+diff --git a/openlane/Makefile b/openlane/Makefile
+index 8509a12..e1e116f 100644
+--- a/openlane/Makefile
++++ b/openlane/Makefile
+@@ -16,7 +16,7 @@
+ MAKEFLAGS+=--warn-undefined-variables
+
+ export OPENLANE_RUN_TAG = $(shell date '+%y_%m_%d_%H_%M')
+-OPENLANE_TAG ?= 2022.10.20
++OPENLANE_TAG ?= 2022.11.29
+ OPENLANE_IMAGE_NAME ?= efabless/openlane:$(OPENLANE_TAG)
+ designs = $(shell find * -maxdepth 0 -type d)
+ current_design = null
+diff --git a/openlane/user_project_wrapper/fixed_dont_change/fixed_wrapper_cfgs.tcl b/openlane/user_project_wrapper/fixed_dont_change/fixed_wrapper_cfgs.tcl
+index 78c72f1..636e68b 100644
+--- a/openlane/user_project_wrapper/fixed_dont_change/fixed_wrapper_cfgs.tcl
++++ b/openlane/user_project_wrapper/fixed_dont_change/fixed_wrapper_cfgs.tcl
+@@ -19,15 +19,16 @@
+ # of your block.
+ set ::env(MAGIC_ZEROIZE_ORIGIN) 0
+
+-set ::env(FP_DEF_TEMPLATE) $::env(DESIGN_DIR)/fixed_dont_change/user_project_wrapper_gf180mcu.def
+-
+ # Area Configurations. DON'T TOUCH.
+ set ::env(FP_SIZING) absolute
+-set ::env(DIE_AREA) "0 0 3000 3000"
+-set ::env(CORE_AREA) "21.5 21.5 2978.5 2978.5"
++set ::env(DIE_AREA) "0 0 2980.2 2980.2"
++set ::env(CORE_AREA) "12 12 2968.2 2968.2"
+
+ set ::env(RUN_CVC) 0
+
++# Pin Configurations. DON'T TOUCH
++set ::env(FP_PIN_ORDER_CFG) $::env(DESIGN_DIR)/pin_order.cfg
++
+ set ::unit 2.4
+ set ::env(FP_IO_VEXTEND) [expr 2*$::unit]
+ set ::env(FP_IO_HEXTEND) [expr 2*$::unit]
+@@ -42,7 +43,7 @@ set ::env(FP_PDN_CORE_RING) 1
+ set ::env(FP_PDN_CORE_RING_VWIDTH) 3.1
+ set ::env(FP_PDN_CORE_RING_HWIDTH) 3.1
+ set ::env(FP_PDN_CORE_RING_VOFFSET) 14
+-set ::env(FP_PDN_CORE_RING_HOFFSET) $::env(FP_PDN_CORE_RING_VOFFSET)
++set ::env(FP_PDN_CORE_RING_HOFFSET) 16
+ set ::env(FP_PDN_CORE_RING_VSPACING) 1.7
+ set ::env(FP_PDN_CORE_RING_HSPACING) $::env(FP_PDN_CORE_RING_VSPACING)
+ set ::env(FP_PDN_HOFFSET) 5
+diff --git a/verilog/rtl/user_defines.v b/verilog/rtl/user_defines.v
+index ee44b08..d16d493 100644
+--- a/verilog/rtl/user_defines.v
++++ b/verilog/rtl/user_defines.v
+@@ -25,20 +25,18 @@
+ // Authoritive source of these MODE defs is: caravel/verilog/rtl/user_defines.v
+ // Useful GPIO mode values.  These match the names used in defs.h.
+ //
+-`define GPIO_MODE_MGMT_STD_INPUT_NOPULL    13'h0403
+-`define GPIO_MODE_MGMT_STD_INPUT_PULLDOWN  13'h0c01
+-`define GPIO_MODE_MGMT_STD_INPUT_PULLUP    13'h0801
+-`define GPIO_MODE_MGMT_STD_OUTPUT          13'h1809
+-`define GPIO_MODE_MGMT_STD_BIDIRECTIONAL   13'h1801
+-`define GPIO_MODE_MGMT_STD_ANALOG          13'h000b
+
+-`define GPIO_MODE_USER_STD_INPUT_NOPULL    13'h0402
+-`define GPIO_MODE_USER_STD_INPUT_PULLDOWN  13'h0c00
+-`define GPIO_MODE_USER_STD_INPUT_PULLUP    13'h0800
+-`define GPIO_MODE_USER_STD_OUTPUT          13'h1808
+-`define GPIO_MODE_USER_STD_BIDIRECTIONAL   13'h1800
+-`define GPIO_MODE_USER_STD_OUT_MONITORED   13'h1802
+-`define GPIO_MODE_USER_STD_ANALOG          13'h000a
++`define GPIO_MODE_MGMT_STD_INPUT_NOPULL    10'h007
++`define GPIO_MODE_MGMT_STD_INPUT_PULLDOWN  10'h047
++`define GPIO_MODE_MGMT_STD_INPUT_PULLUP    10'h087
++`define GPIO_MODE_MGMT_STD_OUTPUT          10'h00b
++`define GPIO_MODE_MGMT_STD_BIDIRECTIONAL   10'h009
++
++`define GPIO_MODE_USER_STD_INPUT_NOPULL    10'h006
++`define GPIO_MODE_USER_STD_INPUT_PULLDOWN  10'h046
++`define GPIO_MODE_USER_STD_INPUT_PULLUP    10'h086
++`define GPIO_MODE_USER_STD_OUTPUT          10'h00a
++`define GPIO_MODE_USER_STD_BIDIRECTIONAL   10'h008
+
+ // The power-on configuration for GPIO 0 to 4 is fixed and cannot be
+ // modified (allowing the SPI and debug to always be accessible unless

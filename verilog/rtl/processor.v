@@ -2,8 +2,8 @@
 
 module processor(
 `ifdef USE_POWER_PINS
-    inout vdd,	// User area 1 3.3V supply
-    inout vss,	// User area 2 3.3V supply
+    inout vdd,	// User area supply
+    inout vss,	// User area ground
 `endif
 
     input clk, reset,
@@ -92,7 +92,7 @@ module processor(
     
     assign PC_load = R_nJ ? write_bus[12:0] : instr_stage2[12:0];   // only for Return operation PC_load is connected to write_bus for retriving instr_mem_address from stack
                                                                     // so that stack read in stage1 is sent to iRW_reg and can be stored from write_bus in stage 2
-    buffer pc_load [12:0] (PC_load_addr, PC_load);                 // JZ and JNZ are executed in stage2 because the zero flag of previous
+    buffer pc_load [12:0] (PC_load_addr, PC_load);                  // JZ and JNZ are executed in stage2 because the zero flag of previous
                                                                     // operation gets updated when this instruction is at the end of stage1
     program_counter Program_counter (clk, reset, instr_mem_addr, PC_load_addr, PC_load_en, start, hlt);
     
@@ -101,7 +101,7 @@ module processor(
     //-----------------------------------stack pointer & Call-----------------------------------------------
     wire SP_load_en, inr_SP, dcr_SP;
     wire [7:0] SP, SP_load;
-    buffer sp_load [7:0] (SP_load, instr_stage1[10:3]);        // so as to execute any instruction related to SP without any NOP instruction and as this instruction 
+    buffer sp_load [7:0] (SP_load, instr_stage1[10:3]);         // so as to execute any instruction related to SP without any NOP instruction and as this instruction 
                                                                 // doesn't depend on p_Z, and other SP using instructions like Call and return
                                                                 // have two NOP instructions following them. => changing in stage1 doesn't affect anything
     

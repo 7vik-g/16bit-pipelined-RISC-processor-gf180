@@ -33,7 +33,7 @@ set ::env(VERILOG_FILES) "\
 	$::env(DESIGN_DIR)/../../verilog/rtl/user_project_wrapper.v"
 
 ## Clock configurations
-set ::env(CLOCK_PORT) "wb_clk_i"
+set ::env(CLOCK_PORT) "clk"
 set ::env(CLOCK_NET) "clk"
 
 set ::env(CLOCK_PERIOD) "40"
@@ -46,11 +46,11 @@ set ::env(SYNTH_USE_PG_PINS_DEFINES) "USE_POWER_PINS"
 ### Macro PDN Connections
 set ::env(FP_PDN_MACRO_HOOKS) "\
 	IO_interface vdd vss vdd vss \
-uP vdd vss vdd vss \
-instr_memory_MSB vdd vss vdd vss \
-instr_memory_LSB vdd vss vdd vss \
-data_memory_MSB vdd vss vdd vss \
-data_memory_LSB vdd vss vdd vss" 
+	uP vdd vss vdd vss \
+	instr_memory_MSB vdd vss vdd vss \
+	instr_memory_LSB vdd vss vdd vss \
+	data_memory_MSB vdd vss vdd vss \
+	data_memory_LSB vdd vss vdd vss" 
 
 ### Macro Placement
 set ::env(MACRO_PLACEMENT_CFG) $::env(DESIGN_DIR)/macro.cfg
@@ -58,19 +58,19 @@ set ::env(MACRO_PLACEMENT_CFG) $::env(DESIGN_DIR)/macro.cfg
 ### Black-box verilog and views
 set ::env(VERILOG_FILES_BLACKBOX) "\
 	$::env(CARAVEL_ROOT)/verilog/rtl/defines.v \
-$::env(DESIGN_DIR)/../../verilog/rtl/processor.v \
-$::env(DESIGN_DIR)/../../verilog/rtl/io_interface.v \
-$::env(DESIGN_DIR)/../../dependencies/pdks/gf180mcuC/libs.ref/gf180mcu_fd_ip_sram/verilog/gf180mcu_fd_ip_sram__sram256x8m8wm1.v"
+	$::env(DESIGN_DIR)/../../verilog/rtl/processor.v \
+	$::env(DESIGN_DIR)/../../verilog/rtl/io_interface.v \
+	$::env(DESIGN_DIR)/../../verilog/rtl/gf180mcu_fd_ip_sram__sram256x8m8wm1.v"
 
 set ::env(EXTRA_LEFS) "\
 	$::env(DESIGN_DIR)/../../lef/processor.lef \
-$::env(DESIGN_DIR)/../../lef/io_interface.lef \
-$::env(DESIGN_DIR)/../../dependencies/pdks/gf180mcuC/libs.ref/gf180mcu_fd_ip_sram/lef/gf180mcu_fd_ip_sram__sram256x8m8wm1.lef"
+	$::env(DESIGN_DIR)/../../lef/io_interface.lef \
+	$::env(DESIGN_DIR)/../../lef/gf180mcu_fd_ip_sram__sram256x8m8wm1.lef"
 
 set ::env(EXTRA_GDS_FILES) "\
 	$::env(DESIGN_DIR)/../../gds/processor.gds \
-$::env(DESIGN_DIR)/../../gds/io_interface.gds \
-$::env(DESIGN_DIR)/../../dependencies/pdks/gf180mcuC/libs.ref/gf180mcu_fd_ip_sram/gds/gf180mcu_fd_ip_sram__sram256x8m8wm1.gds"
+	$::env(DESIGN_DIR)/../../gds/io_interface.gds \
+	$::env(DESIGN_DIR)/../../gds/gf180mcu_fd_ip_sram__sram256x8m8wm1.gds"
 
 set ::env(RT_MAX_LAYER) {Metal4}
 

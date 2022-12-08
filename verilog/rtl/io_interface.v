@@ -2,8 +2,8 @@
 
 module io_interface (
 `ifdef USE_POWER_PINS
-    inout vdd,	// User area 1 3.3V supply
-    inout vss,	// User area 2 3.3V supply
+    inout vdd,	// User area supply
+    inout vss,	// User area ground
 `endif
 
     // Wishbone Slave ports (WB MI A)
@@ -20,9 +20,9 @@ module io_interface (
     output [31:0] wbs_dat_o,
 */
     // Logic Analyzer Signals
-    input  [127:0] la_data_in,
+//    input  [127:0] la_data_in,
     output [127:0] la_data_out,
-    input  [127:0] la_oenb,
+//    input  [127:0] la_oenb,
 
     // IOs
     input  [`MPRJ_IO_PADS-1:0] io_in,
@@ -75,13 +75,13 @@ module io_interface (
     
     // 16-bit input
     wire [15:0] data_in;			//data_in
-    assign data_in = io_in[15:0];
-    assign io_oeb[15:0] = 16'hFFFF;
+    assign data_in = io_in[31:16];
+    assign io_oeb[31:16] = 16'hFFFF;
      
     // 16-bit output
     wire [15:0] data_out;			//data_out
-    assign io_out[31:16] = data_out;
-    assign io_oeb[31:16] = 16'h0000;
+    assign io_out[15:0] = data_out;
+    assign io_oeb[15:0] = 16'h0000;
     
     //control signals for data loading & reading
     wire addr_memb;				//addr_memb
@@ -119,8 +119,8 @@ module io_interface (
     else instr_load_addr <= instr_load_addr + 1;
     
     
-    wire [15:0] data_out0;
-    /*
+    reg [15:0] data_out0;
+    
     always @(*)
     case({addr_memb,instr_datab})
     2'b00	:	data_out0 = data_read_data;
@@ -128,8 +128,8 @@ module io_interface (
     2'b10	:	data_out0 = {8'h00,data_load_addr};
     2'b11	:	data_out0 = {3'b000,instr_load_addr};
     endcase
-    */
-    mux_4x1 Data_out0 [15:0] (data_read_data, instr, {8'h00,data_load_addr}, {3'b000,instr_load_addr}, {16{addr_memb}}, {16{instr_datab}}, data_out0);
+    
+    //mux_4x1 Data_out0 [15:0] (data_read_data, instr, {8'h00,data_load_addr}, {3'b000,instr_load_addr}, {16{addr_memb}}, {16{instr_datab}}, data_out0);
     assign data_out = wr_rdb ? data_in : data_out0;
     
     
@@ -163,7 +163,7 @@ module io_interface (
     assign la_data_out[15:0] = 16'b0;		//unused	
 
 endmodule
-
+/*
 module mux_4x1(
     input i0, i1, i2, i3,
     input s1, s0,
@@ -173,5 +173,5 @@ module mux_4x1(
     assign y = (!s1)&(!s0)&i0 | (!s1)&(s0)&i1 | (s1)&(!s0)&i2 | (s1)&(s0)&i3;
     
 endmodule
-
+*/
 `default_nettype wire

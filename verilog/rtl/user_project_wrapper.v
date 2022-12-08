@@ -33,8 +33,8 @@ module user_project_wrapper #(
     parameter BITS = 32
 ) (
 `ifdef USE_POWER_PINS
-    inout vdd,	// User area 1 3.3V supply
-    inout vss,	// User area 2 3.3V supply
+    inout vdd,	// User area supply
+    inout vss,	// User area ground
 `endif
 
     // Wishbone Slave ports (WB MI A)
@@ -92,8 +92,8 @@ module user_project_wrapper #(
     
 processor uP(
 `ifdef USE_POWER_PINS
-    .vdd(vdd),	// User area 1 3.3V supply
-    .vss(vss),	// User area 2 3.3V supply
+	.vdd(vdd),	// User area 1 1.8V power
+	.vss(vss),	// User area 1 digital ground
 `endif
     .clk(clk), .reset(reset),
     .instr_mem_addr(uP_instr_mem_addr),
@@ -193,9 +193,9 @@ io_interface IO_interface (
 */
     // Logic Analyzer
 
-    .la_data_in(la_data_in),
+//    .la_data_in(la_data_in),
     .la_data_out(la_data_out),
-    .la_oenb (la_oenb),
+//    .la_oenb (la_oenb),
 
     // IO Pads
 
