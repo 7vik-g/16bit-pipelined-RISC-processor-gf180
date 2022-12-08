@@ -46,7 +46,7 @@ set ::env(SYNTH_USE_PG_PINS_DEFINES) "USE_POWER_PINS"
 ### Macro PDN Connections
 set ::env(FP_PDN_MACRO_HOOKS) "\
 	IO_interface vdd vss vdd vss \
-	uP vdd vss vdd vss \
+	micro_processor vdd vss vdd vss \
 	instr_memory_MSB vdd vss vdd vss \
 	instr_memory_LSB vdd vss vdd vss \
 	data_memory_MSB vdd vss vdd vss \
