@@ -25,26 +25,19 @@
 `timescale 1 ps / 1 ps
 
 module gf180mcu_fd_ip_sram__sram256x8m8wm1 (
-	CLK,
-	CEN,
-	GWEN,
-	WEN,
-	A,
-	D,
-	Q,
-	VDD,
-	VSS
+`ifdef USE_POWER_PINS
+inout		VDD,
+inout		VSS,
+`endif
+input           CLK,
+input           CEN,    //Chip Enable
+input           GWEN,   //Global Write Enable
+input   [7:0]   WEN,    //Write Enable
+input   [7:0]   A,
+input   [7:0]   D,
+output  [7:0]   Q
 );
 
-input           CLK;
-input           CEN;    //Chip Enable
-input           GWEN;   //Global Write Enable
-input   [7:0]  	WEN;    //Write Enable
-input   [7:0]   A;
-input   [7:0]  	D;
-output	[7:0]	Q;
-inout		VDD;
-inout		VSS;
 
 reg	[7:0]	mem[255:0];
 reg	[7:0]	qo_reg;

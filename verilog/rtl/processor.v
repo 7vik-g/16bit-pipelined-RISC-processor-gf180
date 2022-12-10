@@ -1,6 +1,6 @@
 `default_nettype none
 
-module processor(
+module processor (
 `ifdef USE_POWER_PINS
     inout vdd,	// User area supply
     inout vss,	// User area ground

@@ -33,7 +33,7 @@ set ::env(VERILOG_FILES) "\
 	$::env(DESIGN_DIR)/../../verilog/rtl/user_project_wrapper.v"
 
 ## Clock configurations
-set ::env(CLOCK_PORT) "clk"
+set ::env(CLOCK_PORT) "wb_clk_i"
 set ::env(CLOCK_NET) "clk"
 
 set ::env(CLOCK_PERIOD) "40"
@@ -45,12 +45,12 @@ set ::env(SYNTH_USE_PG_PINS_DEFINES) "USE_POWER_PINS"
 ## Internal Macros
 ### Macro PDN Connections
 set ::env(FP_PDN_MACRO_HOOKS) "\
-	IO_interface vdd vss vdd vss \
-	micro_processor vdd vss vdd vss \
-	instr_memory_MSB vdd vss vdd vss \
-	instr_memory_LSB vdd vss vdd vss \
-	data_memory_MSB vdd vss vdd vss \
-	data_memory_LSB vdd vss vdd vss" 
+	IO_interface vdd vss vdd vss, \
+	micro_processor vdd vss vdd vss, \
+	instr_memory_MSB vdd vss vdd vss, \
+	instr_memory_LSB vdd vss vdd vss, \
+	data_memory_MSB vdd vss vdd vss, \
+	data_memory_LSB vdd vss vdd vss"
 
 ### Macro Placement
 set ::env(MACRO_PLACEMENT_CFG) $::env(DESIGN_DIR)/macro.cfg
@@ -87,11 +87,11 @@ set ::env(PL_RESIZER_TIMING_OPTIMIZATIONS) 0
 set ::env(PL_RESIZER_BUFFER_INPUT_PORTS) 0
 set ::env(PL_RESIZER_BUFFER_OUTPUT_PORTS) 0
 
-set ::env(FP_PDN_ENABLE_RAILS) 0
+set ::env(FP_PDN_ENABLE_RAILS) 1
 
 set ::env(DIODE_INSERTION_STRATEGY) 0
-set ::env(RUN_FILL_INSERTION) 0
-set ::env(RUN_TAP_DECAP_INSERTION) 0
+set ::env(RUN_FILL_INSERTION) 1
+set ::env(RUN_TAP_DECAP_INSERTION) 1
 set ::env(CLOCK_TREE_SYNTH) 0
 set ::env(FP_PDN_HPITCH) 60
 set ::env(FP_PDN_HPITCH_MULT) 1    

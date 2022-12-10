@@ -74,15 +74,12 @@ module user_project_wrapper #(
 
 /* User project is instantiated  here   */
 
-
-//---------Processor----------------------------------------------------------------------
-
+    //Processor related
     wire clk;
     wire reset;
     wire [12:0] uP_instr_mem_addr;
     wire [15:0] uP_instr;
     wire [7:0] uP_data_mem_addr;
-    wire [15:0] uP_read_data = data_read_data;
     wire [15:0] uP_write_data;
     wire uP_dataw_en; 
     wire start;
@@ -90,6 +87,24 @@ module user_project_wrapper #(
     wire Serial_input;
     wire Serial_output;
     
+    //Data memory related
+    wire data_mem_sel;
+    wire dataw_en;
+    wire [7:0] dataw_en_8bit;
+    wire [7:0] data_mem_addr;
+    wire [15:0] data_write_data;
+    wire [15:0] data_read_data;
+    
+    //Instruction memory related
+    wire instr_mem_sel;
+    wire instrw_en;
+    wire [7:0] instrw_en_8bit;
+    wire [7:0] instr_mem_addr;
+    wire [15:0] instr_write_data;
+    wire [15:0] instr;
+
+//---------Processor----------------------------------------------------------------------
+        
 processor micro_processor(
 `ifdef USE_POWER_PINS
 	.vdd(vdd),	// User area 1 1.8V power
@@ -99,7 +114,7 @@ processor micro_processor(
     .instr_mem_addr(uP_instr_mem_addr),
     .instr(uP_instr),
     .data_mem_addr(uP_data_mem_addr),
-    .read_data(uP_read_data),
+    .read_data(data_read_data),		//since, the data is read only from memory
     .write_data(uP_write_data),
     .Dataw_en(uP_dataw_en),
     .start(start),
@@ -110,67 +125,66 @@ processor micro_processor(
     
     
 //-----------Data_memory------------------------------------------------------------------
-    wire data_mem_sel = 1'b1;
-    wire dataw_en;
-    wire [7:0] data_mem_addr;
-    wire [15:0] data_write_data;
-    wire [15:0] data_read_data;
+    
 gf180mcu_fd_ip_sram__sram256x8m8wm1 data_memory_LSB(
 	.CLK(clk),
 	.CEN(data_mem_sel),
 	.GWEN(dataw_en),
-	.WEN({8{dataw_en}}),
+	.WEN(dataw_en_8bit),
 	.A(data_mem_addr),
 	.D(data_write_data[7:0]),
 	.Q(data_read_data[7:0]),
+`ifdef USE_POWER_PINS
 	.VDD(vdd),
 	.VSS(vss)
+`endif
         );
 
 gf180mcu_fd_ip_sram__sram256x8m8wm1 data_memory_MSB(
 	.CLK(clk),
 	.CEN(data_mem_sel),
 	.GWEN(dataw_en),
-	.WEN({8{dataw_en}}),
+	.WEN(dataw_en_8bit),
 	.A(data_mem_addr),
 	.D(data_write_data[15:8]),
 	.Q(data_read_data[15:8]),
+`ifdef USE_POWER_PINS
 	.VDD(vdd),
 	.VSS(vss)
+`endif
         );
 
 //------------Instruction_memory----------------------------------------------------------
-    wire instr_mem_sel = 1'b1;
-    wire instrw_en;
-    wire [12:0] instr_mem_addr;
-    wire [12:8] dummy = instr_mem_addr[12:8];
-    wire [15:0] instr_write_data;
-    wire [15:0] instr;
+    
 gf180mcu_fd_ip_sram__sram256x8m8wm1 instr_memory_LSB(
 	.CLK(clk),
 	.CEN(instr_mem_sel),
 	.GWEN(instrw_en),
-	.WEN({8{instrw_en}}),
+	.WEN(instrw_en_8bit),
 	.A(instr_mem_addr[7:0]),
 	.D(instr_write_data[7:0]),
 	.Q(instr[7:0]),
+`ifdef USE_POWER_PINS
 	.VDD(vdd),
 	.VSS(vss)
+`endif
         );
 
 gf180mcu_fd_ip_sram__sram256x8m8wm1 instr_memory_MSB(
 	.CLK(clk),
 	.CEN(instr_mem_sel),
 	.GWEN(instrw_en),
-	.WEN({8{instrw_en}}),
+	.WEN(instrw_en_8bit),
 	.A(instr_mem_addr[7:0]),
 	.D(instr_write_data[15:8]),
 	.Q(instr[15:8]),
+`ifdef USE_POWER_PINS
 	.VDD(vdd),
 	.VSS(vss)
+`endif
         );
 
-
+//----------io_interface------------------------------------------------------------------
 io_interface IO_interface (
 `ifdef USE_POWER_PINS
 	.vdd(vdd),	// User area 1 1.8V power
@@ -181,7 +195,7 @@ io_interface IO_interface (
     .wb_rst_i(wb_rst_i),
 
     // MGMT SoC Wishbone Slave
-/*
+
     .wbs_cyc_i(wbs_cyc_i),
     .wbs_stb_i(wbs_stb_i),
     .wbs_we_i(wbs_we_i),
@@ -190,12 +204,12 @@ io_interface IO_interface (
     .wbs_dat_i(wbs_dat_i),
     .wbs_ack_o(wbs_ack_o),
     .wbs_dat_o(wbs_dat_o),
-*/
+
     // Logic Analyzer
 
-//    .la_data_in(la_data_in),
+    .la_data_in(la_data_in),
     .la_data_out(la_data_out),
-//    .la_oenb (la_oenb),
+    .la_oenb (la_oenb),
 
     // IO Pads
 
@@ -206,7 +220,10 @@ io_interface IO_interface (
     // clk & reset
     .clk(clk),
     .reset(reset),
-
+    
+    //analog pins
+    .analog_io(analog_io),
+    
     // IRQ
     .irq(user_irq),
     
@@ -218,15 +235,21 @@ io_interface IO_interface (
     .uP_dataw_en(uP_dataw_en),
     .start(start),
     .hlt(hlt),
+    .Serial_input(Serial_input),
+    .Serial_output(Serial_output),
     
     // data memory related
+    .data_mem_sel(data_mem_sel),
     .dataw_en(dataw_en),
+    .dataw_en_8bit(dataw_en_8bit),
     .data_mem_addr(data_mem_addr),
     .data_write_data(data_write_data),
     .data_read_data(data_read_data),
     
     // instr memory related
+    .instr_mem_sel(instr_mem_sel),
     .instrw_en(instrw_en),
+    .instrw_en_8bit(instrw_en_8bit),
     .instr_mem_addr(instr_mem_addr),
     .instr_write_data(instr_write_data),
     .instr(instr)
